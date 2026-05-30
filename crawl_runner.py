@@ -29,6 +29,9 @@ class LululemonCrawler:
             variants = self.extract_variants(next_data, soup)
             print(f"[DEBUG] 추출된 variant 개수: {len(variants)}")
 
+            if variants:
+                print(json.dumps(variants[0], indent=2, ensure_ascii=False))
+
             if not variants:
                 print(f"[DEBUG] 추출 실패! URL 확인 필요: {url}")
                 return [], h1_product_name
@@ -85,31 +88,90 @@ class LululemonCrawler:
             return {}
 
     def extract_variants(self, next_data, soup) -> List[Dict[str, Any]]:
-        # 1. 구조적 탐색
+
         try:
-            product = next_data.get('props', {}).get('pageProps', {}).get('initialData', {}).get('product', {})
-            variants = product.get('variants', [])
-            if variants: return variants
-        except: pass
+            product = (
+                next_data.get("props", {})
+                .get("pageProps", {})
+                .get("initialData", {})
+                .get("product", {})
+            )
 
-        # 2. 재귀적 탐색 (못 찾을 때를 대비)
+            variants = product.get("variants", [])
+
+            if isinstance(variants, list) and variants:
+                print(f"[DEBUG] product.variants 발견: {len(variants)}")
+                return variants
+
+        except Exception as e:
+            print(f"[DEBUG] product.variants 탐색 실패: {e}")
+
         found = self.find_all_values_by_key(next_data, "variants")
-        if found:
-            for f in found:
-                if isinstance(f, list) and len(f) > 0: return f
 
-        return []
+        best = []
 
+        for item in found:
+
+            if not isinstance(item, list):
+                continue
+
+            dict_rows = [
+                x for x in item
+                if isinstance(x, dict)
+            ]
+
+            if len(dict_rows) > len(best):
+                best = dict_rows
+
+        if best:
+            print(f"[DEBUG] 재귀탐색 variants 발견: {len(best)}")
+
+        return best
     # --- 유틸리티 및 데이터 정규화 ---
     def normalize_variant(self, v) -> Optional[Dict[str, Any]]:
-        color = self.pick_first_text(v.get("color"), v.get("colour"), self.deep_get(v, ["attributes", "color"]))
-        size = self.pick_first_text(v.get("size"), v.get("displaySize"), self.deep_get(v, ["attributes", "size"]))
-        price = self.pick_first_text(self.deep_get(v, ["offers", "price"]), v.get("price"), self.deep_get(v, ["pricing", "price"]))
-        avail = self.pick_first_text(self.deep_get(v, ["offers", "availability"]), v.get("availability"), self.deep_get(v, ["inventory", "status"]))
 
-        if not color and not size: return None
-        return {"color": color, "size": size, "price": price, "availability": avail}
+        offers = v.get("offers", {})
 
+        if isinstance(offers, list):
+            offers = offers[0] if offers else {}
+
+        color = self.pick_first_text(
+            v.get("color"),
+            v.get("colour"),
+            self.deep_get(v, ["attributes", "color"]),
+            self.deep_get(v, ["attributes", "colour"]),
+        )
+
+        size = self.pick_first_text(
+            v.get("size"),
+            v.get("displaySize"),
+            self.deep_get(v, ["attributes", "size"]),
+            self.deep_get(v, ["attributes", "displaySize"]),
+        )
+
+        price = self.pick_first_text(
+            offers.get("price"),
+            v.get("price"),
+            self.deep_get(v, ["pricing", "price"]),
+            self.deep_get(v, ["priceInfo", "price"]),
+        )
+
+        avail = self.pick_first_text(
+            offers.get("availability"),
+            v.get("availability"),
+            self.deep_get(v, ["inventory", "availability"]),
+            self.deep_get(v, ["inventory", "status"]),
+        )
+
+        if not color and not size:
+            return None
+
+        return {
+            "color": color,
+            "size": size,
+            "price": price,
+            "availability": avail
+        }
     def sort_rows_by_color_and_size(self, rows):
         rows.sort(key=lambda x: (str(x.get("color", "")), str(x.get("size", ""))))
 
