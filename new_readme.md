@@ -192,7 +192,20 @@ C:\WINDOWS\system32>netsh advfirewall firewall add rule name="crawl-server-5000"
 
 
 
+[파이썬 가상환경 세팅 및 서버 실행 요약]
 
+1. 가상환경 생성 (프로젝트 폴더에서 진행)
+> python -m venv venv
+
+2. 가상환경 활성화 (매번 서버를 켤 때마다 먼저 실행해야 함)
+> venv\Scripts\activate
+* 성공 시 프롬프트 앞에 (venv) 가 표시됨.
+
+3. 필수 패키지 설치
+> pip install flask waitress (필요한 크롤링 패키지 추가)
+
+4. 운영 서버 구동
+> python run_server.py
 
 
 
