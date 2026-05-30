@@ -191,6 +191,7 @@ C:\WINDOWS\system32>netsh advfirewall firewall add rule name="crawl-server-5000"
 확인됨
 
 
+Set-Content -Path .env -Value "API_TOKEN=my-secret-key-1234" -Encoding UTF8
 
 [파이썬 가상환경 세팅 및 서버 실행 요약]
 
@@ -206,6 +207,9 @@ C:\WINDOWS\system32>netsh advfirewall firewall add rule name="crawl-server-5000"
 
 4. 운영 서버 구동
 > python run_server.py
+
+
+
 
 
 
