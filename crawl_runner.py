@@ -49,13 +49,10 @@ class LululemonCrawler:
         except:
             return {}
 
-    def product_api_data(self, url: str) -> Tuple[Dict[str, Any], str]:
+    def product_api_data(self, url: str):
         try:
             soup = self.fetch_product_soup(url)
-            next_data = self.extract_next_data(soup)
-            h1_tag = soup.find("h1")
-            name = h1_tag.get_text(" ", strip=True) if h1_tag else "상품명 없음"
-            return next_data, name
+            return soup
         except Exception as e:
             logger.error(f"크롤링 중 에러 발생: {e}")
             self._restart_driver()  # 에러 발생 시 드라이버 재시작

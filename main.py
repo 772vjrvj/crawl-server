@@ -36,15 +36,14 @@ def handle_crawl():
 
     logger.info(f"크롤링 요청 시작: {url}")
     try:
-        next_data, name = crawler.product_api_data(url)
+        soup = crawler.product_api_data(url)
 
-        if not next_data and name == "Error":
+        if not soup:
             return jsonify({"success": False, "message": "Crawler failed, retry later"}), 500
 
         return jsonify({
             "success": True,
-            "product_name": name,
-            "next_data": next_data
+            "soup": str(soup)  # [핵심 수정] BeautifulSoup 객체를 문자열로 변환
         })
     except Exception as e:
         logger.error(f"API 핸들러 에러: {e}")
