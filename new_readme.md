@@ -213,3 +213,34 @@ Set-Content -Path .env -Value "API_TOKEN=my-secret-key-1234" -Encoding UTF8
 
 
 
+ModuleNotFoundError: No module named 'dotenv'
+
+중지
+pm2 stop crawl-server
+
+삭제
+pm2 delete crawl-server
+
+실행
+pm2 start run_server.py --name crawl-server --interpreter ".\venv\Scripts\python.exe"
+
+파이선 창 드는경우 안뜨게
+pm2 start run_server.py --name crawl-server --interpreter ".\venv\Scripts\pythonw.exe"
+
+pm2 logs crawl-server
+
+pm2 logs crawl-server --lines 100
+
+pm2 save
+= 현재 PM2 프로세스 목록 저장
+
+pm2 resurrect
+= 저장된 목록 다시 실행
+
+로그 비우기
+pm2 flush
+
+특정 서버만 비우기
+pm2 flush crawl-server
+
+todo 로그 나중에 다로 정리
