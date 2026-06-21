@@ -211,5 +211,85 @@ Set-Content -Path .env -Value "API_TOKEN=my-secret-key-1234" -Encoding UTF8
 
 
 
+프로젝트 폴더에서 PowerShell을 열고 실행하면 돼.
+
+cd C:\Users\772vjrvj\Documents\GitHub\crawl-server
+
+처음 등록:
+
+pm2 start run_server.py --name crawl-server --interpreter python
+
+이미 등록돼 있으면 재시작:
+
+pm2 restart crawl-server
+
+로그 확인:
+
+pm2 logs crawl-server --lines 100
+
+상태 확인:
+
+pm2 status
+
+윈도우 재부팅 후에도 목록을 유지하려면:
+
+pm2 save
+
+
+
+PM2 중지
+pm2 stop crawl-server
+
+중지한 프로세스를 다시 시작:
+
+pm2 start crawl-server
+
+또는:
+
+pm2 restart crawl-server
+PM2 목록에서 삭제
+pm2 delete crawl-server
+
+전체 프로세스 중지:
+
+pm2 stop all
+
+전체 프로세스 삭제:
+
+pm2 delete all
+
+PM2 데몬까지 완전히 종료:
+
+pm2 kill
+
+로그 파일 내용만 전체 초기화:
+
+pm2 flush
+
+보통 수정 후에는 다음 순서면 돼.
+
+pm2 restart crawl-server
+pm2 logs crawl-server --lines 100
+
+
+
+로그 파일 직접 보기
+
+먼저 PM2 로그 폴더 확인:
+
+cd $env:USERPROFILE\.pm2\logs
+dir
+
+실시간 출력 로그:
+
+Get-Content .\crawl-server-out.log -Tail 100 -Wait
+
+실시간 에러 로그:
+
+Get-Content .\crawl-server-error.log -Tail 100 -Wait
+-Tail 100: 마지막 100줄부터 표시
+-Wait: 새 로그가 생기면 계속 실시간 표시
+종료: Ctrl + C
+
 
 
