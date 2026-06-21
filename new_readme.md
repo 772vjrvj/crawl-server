@@ -217,7 +217,17 @@ cd C:\Users\772vjrvj\Documents\GitHub\crawl-server
 
 처음 등록:
 
-pm2 start run_server.py --name crawl-server --interpreter python
+
+pm2 start run_server.py --name crawl-server --interpreter ".\venv\Scripts\python.exe"
+
+
+
+
+
+
+
+
+
 
 이미 등록돼 있으면 재시작:
 
@@ -293,3 +303,32 @@ Get-Content .\crawl-server-error.log -Tail 100 -Wait
 
 
 
+
+cd C:\Users\772vjrvj\Documents\GitHub\crawl-server
+
+$env:PYTHONUTF8="1"
+$env:PYTHONIOENCODING="utf-8"
+
+$pythonPath = (Resolve-Path ".\venv\Scripts\python.exe").Path
+$pythonPath
+
+pm2 start run_server.py --name crawl-server --interpreter "$pythonPath"
+
+
+cd $env:USERPROFILE\.pm2\logs
+dir
+
+실시간 출력 로그:
+
+Get-Content .\crawl-server-out.log -Tail 100 -Wait
+
+실시간 에러 로그:
+
+Get-Content .\crawl-server-error.log -Tail 100 -Wait
+-Tail 100: 마지막 100줄부터 표시
+-Wait: 새 로그가 생기면 계속 실시간 표시
+종료: Ctrl + C
+
+Get-Content C:\Users\772vjrvj\.pm2\logs\crawl-server-error.log -Wait -Tail 30 -Encoding UTF8
+
+Get-Content E:\git\address-api\logs\server_5102.log -Wait -Tail 30 -Encoding UTF8
